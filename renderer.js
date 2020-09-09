@@ -31,21 +31,21 @@ var getLayout = function(layout) {
     }
 };
 
-var getContent = function(matter, context, type) {
+var getContent = function(matterContent, layoutStr, type) {
     var content = '';
     switch (type) {
     case 'njk':
-        content = matter.content;
-        if (context.layout) {
-            content = '{% extends "' + getLayout(context.layout) + '" %}' + content;
+        content = matterContent;
+        if (layoutStr) {
+            content = '{% extends "' + getLayout(layoutStr) + '" %}' + content;
         }
         break;
     case 'md':
     default:
         // default for content is markdown
-        content = '{% block content %}' + matter.content + '{% endblock %}'
-        if (context.layout) {
-            content = '{% extends "' + getLayout(context.layout) + '" %}' + content;
+        content = '{% block content %}' + matterContent + '{% endblock %}'
+        if (layoutStr) {
+            content = '{% extends "' + getLayout(layoutStr) + '" %}' + content;
         }
         break;
     }
@@ -84,7 +84,7 @@ var render = function(path, options, callback) {
     try {
         const matter = graymatter.read(path);
         const context = getContext(matter, options);
-        const content = getContent(matter, context, type);
+        const content = getContent(matter.content, context.layout, type);
         const html = getHtml(content, context, type);
         return callback(null, html);
     } catch(err) {
